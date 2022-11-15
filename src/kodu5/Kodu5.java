@@ -174,16 +174,16 @@ class Kodu5 {
     }
 
     public static Tipp eemaldaKirjeRek(Tipp juur, String info) {
+        if (juur == null) return null;
+
         int võti = Integer.parseInt(juur.info);
         int eemaldatav = Integer.parseInt(info);
         Tipp tipp = null;
 
         if (eemaldatav == võti) {
             Tipp liidetud = liidaAVLpuud(juur.v, juur.p);
-            /*tipp*/
             juur = liidetud;
-//            return tipp;
-            System.out.println();
+
         } else if (eemaldatav < võti) {
             tipp = eemaldaKirjeRek(juur.v, info);
             juur.v = tipp;
@@ -259,14 +259,14 @@ class Kodu5 {
         int pööratavaHarud = 0; // Fikseerime, millist pööret tuleb teostada.
 
         if (kõrgusV > kõrgusP) {
-            pööratavaHarud = (juur.p != null && juur.v != null) ? 0b11 :
-                    (juur.p != null) ? 0b01 :
+            pööratavaHarud = (juur.v.p != null && juur.v.v != null) ? 0b11 :
+                    (juur.v.p != null) ? 0b01 :
                             0b10;
         }
 
         if (kõrgusV < kõrgusP) {
-            pööratavaHarud = -((juur.p != null && juur.v != null) ? 0b11 :
-                    (juur.p != null) ? 0b01 :
+            pööratavaHarud = -((juur.p.p != null && juur.p.v != null) ? 0b11 :
+                    (juur.p.p != null) ? 0b01 :
                             0b10);
         }
 
@@ -327,7 +327,7 @@ class Kodu5 {
                 väikseim.p = avl2;
             }
 
-        }
+        } else väikseim.p = avl2;
 
         väikseim.v = avl1;
         väikseim.x = leiaKõrgus(väikseim);
@@ -363,9 +363,9 @@ class Kodu5 {
 
         Tipp tipp1 = new Tipp("2");
         tipp1 = lisaKirje(tipp1, "1");
-        tipp1 = lisaKirje(tipp1, "3");
         tipp1 = lisaKirje(tipp1, "4");
-        tipp1 = eemaldaKirje(tipp1, "1");
+        tipp1 = lisaKirje(tipp1, "3");
+        tipp1 = eemaldaKirje(tipp1, "2");
 
 //        Tipp tipp1 = new Tipp("3");
 //        tipp1 = lisaKirje(tipp1, "1");
@@ -376,6 +376,14 @@ class Kodu5 {
 //        tipp1 = lisaKirje(tipp1, "4");
 //        tipp1 = eemaldaKirje(tipp1, "6");
 
+//        Tipp tipp1 = new Tipp("3");
+//        tipp1 = lisaKirje(tipp1, "1");
+//        tipp1 = lisaKirje(tipp1, "4");
+//        tipp1 = lisaKirje(tipp1, "2");
+//        tipp1 = eemaldaKirje(tipp1, "4");
+
+//        Tipp tipp1 = new Tipp("1")
+//        tipp1 = eemaldaKirje(tipp1, "2");
 
         Kuvar.kuvaPuu(tipp1);
         System.out.println();
