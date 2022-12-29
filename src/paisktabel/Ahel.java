@@ -1,14 +1,14 @@
 package paisktabel;
 
-public class AlgodeAhel {
+public class Ahel{
     private final int väärtus;
-    private AlgodeAhel järgmine;
+    private Ahel järgmine;
 
-    public AlgodeAhel(int väärtus) {
+    public Ahel(int väärtus) {
         this.väärtus = väärtus;
     }
 
-    public AlgodeAhel(int väärtus, AlgodeAhel järgmine) {
+    public Ahel(int väärtus, Ahel järgmine) {
         this.väärtus = väärtus;
         this.järgmine = järgmine;
     }
@@ -17,11 +17,11 @@ public class AlgodeAhel {
         return väärtus;
     }
 
-    public AlgodeAhel getJärgmine() {
+    public Ahel getJärgmine() {
         return järgmine;
     }
 
-    public void setJärgmine(AlgodeAhel järgmine) {
+    public void setJärgmine(Ahel järgmine) {
         this.järgmine = järgmine;
     }
 

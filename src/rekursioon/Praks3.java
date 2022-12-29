@@ -1,4 +1,4 @@
-package praks3;
+package rekursioon;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -165,5 +165,9 @@ public class Praks3 {
 		}
 		if (k > 0) yl5Parem(arvud, k - 1, lisa(kombinatsioon, arvud[i]), i + 1);
 		if (k < arvud.length - i) yl5Parem(arvud, k, kombinatsioon, i + 1);
+	}
+
+	public static void main(String[] args) {
+		yl2Parim(new int[]{1, 2, 3, 4,});
 	}
 }

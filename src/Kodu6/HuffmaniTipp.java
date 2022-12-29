@@ -1,8 +1,6 @@
-package Kodu6;
 
+// Huffmani tipu klass puu kodeeringu puu konstrueerimiseks.
 public class HuffmaniTipp {
-//    Character info;
-
     String info;
     HuffmaniTipp v;
     HuffmaniTipp p;

@@ -1,6 +1,6 @@
-package praks4;
+package rekursioon;
 
-import praks2.Praks2;
+import keerukuse_empiiriline_hindamine.Praks2;
 
 import java.util.ArrayList;
 import java.util.List;

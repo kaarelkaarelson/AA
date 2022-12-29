@@ -5,7 +5,7 @@ import kodu1.Abi;
 import java.math.BigDecimal;
 import java.util.*;
 
-public class Kodu2BDev {
+public class Kodu2BDevBackup {
     Abi abi = new Abi();
     int loendur = 0;
     int objekte = 0;

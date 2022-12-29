@@ -9,12 +9,6 @@ import java.util.List;
 
 public class Praks2 {
 
-	public static int juhuslik(int a, int b) {
-		//Antud: poollõik [a,b)
-		//Tagastab: juhusliku täisarvu sellelt lõigult
-		return (int) (Math.round(Math.random() * (b - a) + a));
-	}
-
 	public static int[] juhuslikMassiiv(int n, int a, int b) {
 		//Antud: n - elementide arv, poollõik [a,b)
 		//Tagastab: n-elemendilise juhuslike täisarvudega järjendi, elemendid lõigult [a,b)
@@ -22,6 +16,12 @@ public class Praks2 {
 		for (int i = 0; i < n; i++)
 			x[i] = juhuslik(a, b);
 		return x;
+	}
+
+	public static int juhuslik(int a, int b) {
+		//Antud: poollõik [a,b)
+		//Tagastab: juhusliku täisarvu sellelt lõigult
+		return (int) (Math.round(Math.random() * (b - a) + a));
 	}
 
 	public static int massiiviSummaKopeerimisega(int[] m) {

@@ -3,7 +3,7 @@ package rekursioon;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Praks4 {
+public class Praks4_minu {
 
     public static List<Integer> yl4(int[] hinnad) {
         List<Integer> võimalused = yl4(hinnad, 0, 0);

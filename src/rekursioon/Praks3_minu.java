@@ -3,7 +3,7 @@ package rekursioon;
 
 import java.util.Arrays;
 
-public class Praks3 {
+public class Praks3_minu {
     public static void main(String[] args) {
 
     yl3(3);

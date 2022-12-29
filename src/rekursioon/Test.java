@@ -1,9 +1,17 @@
 package rekursioon;
 
+import kodu1.Kiirmeetod;
+import abi.JärjendAbi;
+import kodu1.Pistemeetod;
+
 import java.util.Arrays;
 
 public class Test {
     static int ridu = 0;
+    static Kiirmeetod_pivot_esimene esimene_lahkmeks = new Kiirmeetod_pivot_esimene();
+    static Kiirmeetod keskmine_lahkmeks = new Kiirmeetod();
+    static JärjendAbi abi = new JärjendAbi();
+    static Pistemeetod pistemeetod = new Pistemeetod();
 
 
     public static void sõned(String s, int n) {
@@ -188,7 +196,30 @@ public class Test {
 
 
     public static void main(String[] args) {
-        int[] a = {5, 2, 6, 3, 4};
+
+        String[] j = new String[]{"P", "I", "S", "T", "E", "M", "E", "E", "T", "O", "D"};
+        pistemeetod.insertionSort(j);
+
+
+
+
+//        int[] a = {5, 2, 6, 3, 4};
+//        int[] samad = abi.genSamadeElementidegaJärjend(100000, 1);
+//        int[] pooleldi_sorteeritud = {1, 1, 1, 3, 4};
+//        int[] juhuslik = abi.genJuhuJärjend(100000, 1, 1000);
+//        int[] sorteeritud = abi.genMittekahanevJärjend(100000, 1, 1000);
+//        int[] sorteeritudMittekasvav = abi.genMittekasvavJärjend(100000, 1, 100);
+        //Collections.reverse(Arrays.asList(sorteeritud));
+        //Arrays.stream(sorteeritud).forEach(e -> System.out.println(e));
+
+//        int[] j = abi.genKonstantseltKasvavJärjendkahanevJärjend(23, 1, 1);
+////        System.out.println(keskmine_lahkmeks.väljakutseid(j));
+//        System.out.println(Arrays.toString(j));
+//        System.out.println(esimene_lahkmeks.väljakutseid(juhuslik));
+//        System.out.println(esimene_lahkmeks.väljakutseid(juhuslik)); // 335
+//        System.out.println(esimene_lahkmeks.väljakutseid(sorteeritud)); // 200
+//        System.out.println(esimene_lahkmeks.väljakutseid(sorteeritudMittekasvav)); // 398
+//        System.out.println(esimene_lahkmeks.väljakutseid(samad));
 
 //        System.out.println(summa5(5));
 //        System.out.println(f(a));
@@ -197,8 +228,8 @@ public class Test {
 //        for (int i = 0; i < 12; i++) {
 //            f(i);
 //        }
-        f(5);
-        System.out.println("Ridu: " + ridu);
+//        f(5);
+//        System.out.println("Ridu: " + ridu);
 //        gun(6,4);
 //        arvud1(5);
 

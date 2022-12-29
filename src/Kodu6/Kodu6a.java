@@ -1,59 +1,41 @@
-package Kodu6;
+/*****************************************************************************
+ * Algoritmid ja andmestruktuurid. LTAT.03.005
+ * 2022/2023 sügissemester
+ *
+ * Kodutöö. Ülesanne nr 6
+ * Teema: Huffmani algoritm.
+ *
+ * Autor: Kaarel-Richard Kaarelson
+ *
+ *****************************************************************************/
 
-/* Kokkupakitud teksti esitavasse faili peame panema pakitud teksti ja seda uuesti lahtipakkimist võimaldava koodipuu
-   (näiteks koodipuu esitus suluesitusena). Soovituslikud sammud:
-a) teksti põhjal luua sümbolite sagedustabel;
-b) sagedustabeli põhjal luua loetelu (näiteks list) ühetipulistest puudest (igas tipus on
-   siis info kujul sümbol + selle esinemiste arv)
-c) selliste puude metsast Huffmani koodipuu loomine
-d) leida koodipuust igale sümbolile vastav uus kood -> prefikskood
-f) koodipuu -> koodipuu suluesitus sõnena
-g) algtekst, prefikskoodid, koodipuu suluesitus -> pakitud tekst
-h) puu suluesitus -> koodipuu taastamine
-i) (taastatud) koodipuu, pakitud tekst -> lahtipakitud tekst
- */
-
-
-import ee.ut.kiho.graaf.Kuvar;
-
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 
 public class Kodu6a {
-
-    //    static int count = 0;
+    /**
+     * Kodeerib etteantud sõne vastavalt Huffmani kodeeringule.
+     * @param s etteantud sõne.
+     * @return tagastab kodeeritud sisu sõnena.
+     */
     public static String kodeeri(String s) {
 
         // Arvutame sümbolite suhtelise sageduse
         HashMap<Character, Integer> sagedused = leiaSümboliteSagedus(s);
 
-        sagedused.entrySet().forEach(entry -> {
-            System.out.println(entry.getKey() + " " + entry.getValue());
-        });
-
         // Leiame Huffmani puu
         PriorityQueue<HuffmaniTipp> q = new PriorityQueue<>((t1, t2) -> t1.x - t2.x);
 
-        int countKeys = 0;
         for (Character v6ti : sagedused.keySet()) {
-
-
-//            System.out.println(v6ti);
             int v22rtus = sagedused.get(v6ti);
             HuffmaniTipp t = new HuffmaniTipp(v6ti, v22rtus);
             q.add(t);
-            countKeys += 1;
-//            System.out.println();
         }
-        System.out.println("kokku võtmeid " + countKeys);
 
         HuffmaniTipp juur = null;
-        if (q.size() == 1) {
+        if (q.size() == 1) { // Erijuht kui ainult üks tipp.
             HuffmaniTipp x = q.peek();
 
             HuffmaniTipp t = new HuffmaniTipp(' ', x.x);
@@ -63,60 +45,56 @@ public class Kodu6a {
         }
 
         while (q.size() > 1) {
-
-            // first min extract.
             HuffmaniTipp x = q.peek();
             q.poll();
 
-            // second min extract.
             HuffmaniTipp y = q.peek();
             q.poll();
 
-            // new node f which is equal
             HuffmaniTipp t = new HuffmaniTipp(' ', x.x + y.x);
 
-            // to the sum of the frequency of the two nodes
-
-            // first extracted node as left child.
             t.v = x;
 
-            // second extracted node as the right child.
             t.p = y;
 
-            // marking the f node as the root node.
             juur = t;
 
-            // add this node to the priority-queue.
             q.add(t);
         }
 
         HashMap<Character, String> prefikskoodid = new HashMap<>();
-        HashMap<Character, Integer> prefikskoodid2 = new HashMap<>();
-        // Koosta prefikskoodide tabel
-        leiaKoodid(juur, 0, prefikskoodid2);
 
-        Kuvar.kuvaPuu(juur);
+        // Koosta prefikskoodide tabeli
+        leiaPrefikskoodid(juur, "", prefikskoodid);
 
         StringBuilder kodeering = new StringBuilder();
 
-        String v6tmed = prefikskoodid.keySet().stream().map(Object::toString).collect(Collectors.joining(","));
+        // Lihtsuse mõttes eraldame faili kirjutamiseks võtmed ja väätused komaga.
+        StringBuilder v6tmedSb = new StringBuilder();
+        for (Character v6ti : prefikskoodid.keySet()) {
+            if (v6ti == ',') {
 
-        StringBuilder v6tmed2 = new StringBuilder();
-        for (Character kood : prefikskoodid.keySet()) {
-            v6tmed2.append(kood + ",");
-            System.out.println(kood + ":" + prefikskoodid.get(kood));
+                v6tmedSb.append("koma" + ',');
+                continue;
+            }
+            v6tmedSb.append(v6ti);
+            v6tmedSb.append(',');
         }
 
-        String[] v6tmedEraldaja = v6tmed.split(",");
+        String v6tmed = v6tmedSb.toString();
         String v22rtused = prefikskoodid.values().stream().map(Object::toString).collect(Collectors.joining(","));
 
         kodeering.append(v6tmed + "/n");
         kodeering.append(v22rtused + "/n");
 
-//        byte [] kodeeritud =
-        System.out.println(prefikskoodid.values());
-
         for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == ',') {
+
+                String prefikskood = prefikskoodid.get(',');
+                kodeering.append(prefikskood + ',');
+                continue;
+            }
+
             char t2ht = s.charAt(i);
             String prefikskood = prefikskoodid.get(t2ht);
             kodeering.append(prefikskood + ',');
@@ -125,6 +103,12 @@ public class Kodu6a {
         return kodeering.toString();
     }
 
+    /**
+     * Leiab sõne kõigi sümbolite sageduse.
+     *
+     * @param s etteantud sõne.
+     * @return tagastab sagedustabeli.
+     */
     private static HashMap<Character, Integer> leiaSümboliteSagedus(String s) {
         HashMap<Character, Integer> sagedused = new HashMap<>();
 
@@ -143,88 +127,64 @@ public class Kodu6a {
         return sagedused;
     }
 
-    public static void leiaKoodid(HuffmaniTipp root, int kood, HashMap<Character, Integer> tabel) {
+    /**
+     * Leiab iga sümboli prefikskoodi ja väärtustab selle etteantud tabelisse.
+     *
+     * @param tipp  etteantud tipp.
+     * @param tee   vastava tipu prefikskood.
+     * @param tabel etteantud prefikskoodide tabel.
+     */
+    public static void leiaPrefikskoodid(HuffmaniTipp tipp, String tee, HashMap<Character, String> tabel) {
 
-        if (root == null) return;
+        if (tipp == null) return;
 
-        if (root.v
+        if (tipp.v
                 == null
-                && root.p
+                && tipp.p
                 == null
-//                && Character.isLetter(root.info.charAt(0))
         ) {
 
-            tabel.put(root.info.charAt(0), kood);
-//            System.out.println(root.info + ":" + s);
+            tabel.put(tipp.info.charAt(0), tee);
 
             return;
         }
 
-        // if we go to left then add "0" to the code.
-        // if we go to the right add"1" to the code.
-
-        // recursive calls for left and
-        // right sub-tree of the generated tree.
-        leiaKoodid(root.v, kood << 1 , tabel);
-        leiaKoodid(root.p, (kood << 1) | 1, tabel);
+        leiaPrefikskoodid(tipp.v, tee + "0", tabel);
+        leiaPrefikskoodid(tipp.p, tee + "1", tabel);
     }
 
-    public static void leiaPrefikskoodid(HuffmaniTipp root, String s, HashMap<Character, String> tabel) {
+    /**
+     * Kasutamata jäänud prefikskoodi leidmise meetod, mis tagastab koodi bitidena.
+     *
+     * @param tipp  etteantud tipp.
+     * @param kood  vastava tipud bitijada.
+     * @param tabel etteantud prefikskoodide tabel.
+     */
+    public static void leiaKoodid(HuffmaniTipp tipp, int kood, HashMap<Character, Integer> tabel) {
 
-        if (root == null) return;
+        if (tipp == null) return;
 
-        if (root.v
+        if (tipp.v
                 == null
-                && root.p
+                && tipp.p
                 == null
-//                && Character.isLetter(root.info.charAt(0))
         ) {
 
-            tabel.put(root.info.charAt(0), s);
-//            System.out.println(root.info + ":" + s);
+            tabel.put(tipp.info.charAt(0), kood);
 
             return;
         }
 
-        // if we go to left then add "0" to the code.
-        // if we go to the right add"1" to the code.
-
-        // recursive calls for left and
-        // right sub-tree of the generated tree.
-        leiaPrefikskoodid(root.v, s + "0", tabel);
-        leiaPrefikskoodid(root.p, s + "1", tabel);
+        leiaKoodid(tipp.v, kood << 1, tabel);
+        leiaKoodid(tipp.p, (kood << 1) | 1, tabel);
     }
 
-    public static void printCode(HuffmaniTipp root, String s) {
-
-        if (root == null) return;
-//        if (root == null) return;
-        // base case; if the left and right are null
-        // then its a leaf node and we print
-        // the code s generated by traversing the tree.
-        if (root.v
-                == null
-                && root.p
-                == null
-//                && Character.isLetter(root.info.charAt(0))
-        ) {
-
-            // c is the character in the node
-            System.out.println(root.info + ":" + s);
-//            count += 1;
-
-            return;
-        }
-
-        // if we go to left then add "0" to the code.
-        // if we go to the right add"1" to the code.
-
-        // recursive calls for left and
-        // right sub-tree of the generated tree.
-        printCode(root.v, s + "0");
-        printCode(root.p, s + "1");
-    }
-
+    /**
+     * Dekodeerib etteantud failisisu.
+     *
+     * @param s etteantud failisisu.
+     * @return tagastab dekodeeritud (inimloetava failisisu).
+     */
     public static String dekodeeri(String s) {
         String[] andmed = s.split("/n");
 
@@ -235,11 +195,13 @@ public class Kodu6a {
         HashMap<String, Character> symbolid = new HashMap<>();
         for (int i = 0; i < v6tmed.length; i++) {
             char v6ti = '.';
-            try {
+            if (v6tmed[i].equals("koma")) {
+                v6ti = ',';
+            } else {
                 v6ti = v6tmed[i].charAt(0);
-            } catch (StringIndexOutOfBoundsException e) {
-                System.out.println(v6tmed[i]);
             }
+
+            System.out.println(v6tmed[i]);
             String v22rtus = v22rtused[i];
 
             symbolid.put(v22rtus, v6ti);
@@ -249,8 +211,11 @@ public class Kodu6a {
         for (int i = 0; i < koodid.length; i++) {
 
             String kood = koodid[i];
-            char symbol = symbolid.get(kood);
+            char symbol = '.';
+            symbol = symbolid.get(kood);
+            System.out.println();
             dekodeering.append(symbol);
+            System.out.println();
         }
 
         return dekodeering.toString();
@@ -262,21 +227,30 @@ public class Kodu6a {
            b) failist sõne dekodeerimisest
          */
 
-//        String failinimi = "Kõrboja_sisu_puhastekst.txt";
-//        String sisu = loeFailist(failinimi);
-//        System.out.println(sisu);
-        String s1 = "llllllllllllahe loom oled, sa minu remma: lauluga' ära mine suve otsa ";
         String s = "Lause on lahe";
         String lihtne = "a";
         String s6ge = "a;a@e(✿◠‿◠)e *_:;>Ze.;aa";
 
-        String s6ge2 = "a3a;bb:cc:cc(d!\"#¤%&/()=?d) aa:,c,.;c`@£$€€😎😫${{[]][}]\\§bb";
+        // Failist lugemine
+        String failinimi = "Kõrboja_sisu_puhastekst.txt";
+        String sisu = loeFailist(failinimi);
 
-        String kodeering = kodeeri(s);
-        String dekodeering = dekodeeri(kodeering);
+        String kodeering = kodeeri(sisu);
+
+        // Faili kirjutamine
+        kirjutaFaili(kodeering, "fail.txt");
+        String sisu2 = loeFailist("fail.txt");
+
+        // Dekodeerimine ja väljastamine
+        String dekodeering = dekodeeri(sisu2);
         System.out.println(dekodeering);
     }
 
+    /**
+     * Loeb failist sisu ja tagastab selle sõne kujul.
+     * @param failinimi etteantud failinimi kooos laiendiga.
+     * @return tagastab faili sisu.
+     */
     private static String loeFailist(String failinimi) {
         StringBuilder sisu = new StringBuilder("");
 
@@ -288,13 +262,24 @@ public class Kodu6a {
 
             String rida;
             for (int i = 0; (rida = br.readLine()) != null; i++) {
-//                System.out.println(rida);
                 sisu.append(rida);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         return sisu.toString();
+    }
+
+    /**
+     * Kirjutab faili etteantud sõne.
+      * @param sisu etteantud sisu sõnena.
+     * @param failinimi etteantud failinimi koos laiendiga.
+     */
+    private static void kirjutaFaili(String sisu, String failinimi) {
+        try (PrintStream out = new PrintStream(new FileOutputStream(failinimi))) {
+            out.print(sisu);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

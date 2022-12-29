@@ -1,4 +1,4 @@
-package praks11_12;
+package kuhjad;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +71,10 @@ public class Kuhi {
 		kuhi.remove(kuhi.size() - 1);
 		mullitaAlla(0);
 		return väärtus;
+	}
+
+	public boolean kasTühi(){
+		return this.kuhi.isEmpty();
 	}
 
 	public void kuhjasta() {
