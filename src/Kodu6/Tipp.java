@@ -1,19 +1,20 @@
+package Kodu6;
 
-// Huffmani tipu klass puu kodeeringu puu konstrueerimiseks.
-public class HuffmaniTipp {
+// Tipu klass puu kodeeringu puu konstrueerimiseks.
+public class Tipp {
     String info;
-    HuffmaniTipp v;
-    HuffmaniTipp p;
+    Tipp v;
+    Tipp p;
     int x; //abiväli
 
-    HuffmaniTipp(Character info, HuffmaniTipp v, HuffmaniTipp p, int x) {
+    Tipp(Character info, Tipp v, Tipp p, int x) {
         this.info = String.valueOf(info);
         this.v = v;
         this.p = p;
         this.x = x;
     }
 
-    HuffmaniTipp(Character info, int x) {
+    Tipp(Character info, int x) {
         this.info = String.valueOf(info);
         this.x = x;
     }
@@ -25,4 +26,4 @@ public class HuffmaniTipp {
     public int getX() {
         return x;
     }
-}//klass HuffmaniTipp
+}

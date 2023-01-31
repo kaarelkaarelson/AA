@@ -5,6 +5,8 @@
  * Kodutöö. Ülesanne nr 5
  * Teema: AVL Puud
  *
+ * Mõningane inspiratsioon: https://www.geeksforgeeks.org/deletion-in-an-avl-tree/
+ *
  * Autor: Kaarel-Richard Kaarelson
  *
  *****************************************************************************/
@@ -19,7 +21,7 @@ import java.util.Stack;
 class Kodu5 {
 
     /**
-     * Kirje lisamise meetod AVL puu jaoks, mis delegeerib ülesande rekursiivsele meetodile.
+     * Kirje lisamise meetod AVL puu jaoks.
      *
      * @param juur etteantud AVL puu tipp.
      * @param info etteantud võti.
@@ -101,6 +103,9 @@ class Kodu5 {
 
         Tipp vasakpööratudJuur = vasakPööre(juur);
 
+        juur.x = Math.max(kõrgus(juur.v), kõrgus(juur.p)) + 1;
+        vasakpööratudJuur.x = Math.max(kõrgus(vasakpööratudJuur.v), kõrgus(vasakpööratudJuur.p)) + 1;
+
         return vasakpööratudJuur;
     }
 
@@ -110,7 +115,7 @@ class Kodu5 {
      * @param juur Puu tipp, mille peal soovitakse pööret sooritada.
      * @return Tagastab pööratud puu.
      */
-    public static Tipp vasakPööre(Tipp juur) { // OK
+    public static Tipp vasakPööre(Tipp juur) {
 
         Tipp parem = juur.p;
         Tipp paremV = parem.v;
@@ -138,6 +143,9 @@ class Kodu5 {
 
         Tipp parempööratudJuur = paremPööre(juur);
 
+        juur.x = Math.max(kõrgus(juur.v), kõrgus(juur.p)) + 1;
+        parempööratudJuur.x = Math.max(kõrgus(parempööratudJuur.v), kõrgus(parempööratudJuur.p)) + 1;
+
         return parempööratudJuur;
     }
 
@@ -147,7 +155,7 @@ class Kodu5 {
      * @param juur Puu tipp, mille peal soovitakse pööret sooritada.
      * @return Tagastab pööratud puu.
      */
-    public static Tipp paremPööre(Tipp juur) { // OK
+    public static Tipp paremPööre(Tipp juur) {
 
         Tipp vasak = juur.v;
         Tipp vasakP = vasak.p;
@@ -179,78 +187,86 @@ class Kodu5 {
      * @param info Etteantud kirje.
      * @return tagastab eemaldatud kirje.
      */
-    public static Tipp eemaldaKirje(Tipp juur, String info) { // Peaks kohe algul kontrollima kas tegu on tipuga, mis tuleb eemaldada.
-        Tipp tipp = eemaldaKirjeRek(juur, info);
-        juur = tipp;
+    public static Tipp eemaldaKirje(Tipp juur, String info) {
+        if (juur == null) return null;
 
-        return juur;
-    }
+        int eemaldaVõti = Integer.parseInt(info);
+        Stack<Tipp> magasin = new Stack<>();
+        magasin.add(juur);
 
-    /**
-     * AVL puu kirje eemaldamise meetod, mis etteantud kirje alusel eemaldab selle puust.
-     *
-     * @param juur AVL puu tipp.
-     * @param info Soovitud kirje võti eemaldamiseks.
-     * @return tagastab eemaldatud kirje.
-     */
-    public static Tipp eemaldaKirjeRek(Tipp juur, String info) {
-//        if (juur == null) return null;
-//
-//        int võti = Integer.parseInt(juur.info);
-//        int eemaldatav = Integer.parseInt(info);
-//        Tipp tipp = null;
-//
-//        if (eemaldatav == võti) {
-//            Tipp liidetud = liidaAVLpuud(juur.v, juur.p);
-//            juur = liidetud;
-//
-//        } else if (eemaldatav < võti) {
-//            tipp = eemaldaKirjeRek(juur.v, info);
-//            juur.v = tipp;
-//
-//        } else {
-//            tipp = eemaldaKirjeRek(juur.p, info);
-//            juur.p = tipp;
-//        }
-//
-//        // Tasakaalustamine
-//        if (!kasTasakaalustatudPuu(juur)) {
-//            juur = tasakaalustaPuu(juur);
-//        }
-//
-        return juur;
-    }
+        Tipp eemaldatud = null;
+        Tipp liidetud = null;
 
-    /**
-     * AVL puu meetod, mis leiab väikseima kirje antud puust ning kustutab selle.
-     *
-     * @param tipp AVL puu.
-     * @return tagastab eemaldatud kirje.
-     */
-    public static Tipp[] leiaJaEemaldaVäikseim(Tipp tipp) {
+        while (true) {
+            Tipp t = magasin.peek();
 
-        if (tipp.v == null) { // Leidsime väikseima elemendi.
+            if (t == null) {
+                magasin.pop();
+                break;
+            }
 
-            return new Tipp[]{tipp};
+            int võti = Integer.parseInt(t.info);
+
+            if (eemaldaVõti == võti) {
+                eemaldatud = magasin.pop();
+
+                liidetud = liidaAVLpuud(t.v, t.p);
+
+                // Eemaldame kirje ka magasinist
+                break;
+
+            } else if (eemaldaVõti < võti) {
+                magasin.push(t.v);
+            } else {
+                magasin.push(t.p);
+            }
         }
 
-        Tipp[] andmed = leiaJaEemaldaVäikseim(tipp.v);
-        Tipp väikseim = andmed[0];
+        if (eemaldatud == null) return juur;
 
-        if (väikseim.x != -1) {
-            if (väikseim.p != null) {
-                tipp.v = väikseim.p; // Kui väikseimal eksisteeris parem haru, siis ühendame selle.
+        Tipp ülem = null;
 
-            } else tipp.v = null; // Vastasel juhul võtame väiksema ära
+        while (!magasin.isEmpty()) {
+            ülem = magasin.pop();
 
-            väikseim.x = -1;
+            // Lisame eemaldatud kirje asemele tema liidetud alluvate kirje;
+            if (eemaldatud != null) {
+                int võti = Integer.parseInt(eemaldatud.info);
+                int ülemaVõti = Integer.parseInt(ülem.info);
 
-            tipp.x = leiaKõrgus(tipp);
-            return new Tipp[]{väikseim, tipp};
+                if (võti < ülemaVõti) {
+                    ülem.v = liidetud;
+                } else {
+                    ülem.p = liidetud;
+                }
+
+                eemaldatud = null;
+                liidetud = null;
+            }
+
+            if (liidetud != null) {
+                int võti = Integer.parseInt(liidetud.info);
+                int ülemaVõti = Integer.parseInt(ülem.info);
+
+                if (võti < ülemaVõti) {
+                    ülem.v = liidetud;
+                } else {
+                    ülem.p = liidetud;
+                }
+
+                liidetud = null;
+            }
+
+            if (!(kasTasakaalustatudPuu(ülem))) {
+                ülem = tasakaalustaPuu(ülem);
+                liidetud = ülem;
+                continue;
+            } else ülem.x = leiaKõrgus(ülem); // Kui puu on tasakaalus, siis määrame uue kõrguse.
+
         }
 
-        tipp.x = leiaKõrgus(tipp);
-        return andmed;
+        // Kui eemaldasime juurtipu, siis tagastame liidetud puu.
+        return ülem == null ? liidetud : ülem;
     }
 
     /**
@@ -299,26 +315,7 @@ class Kodu5 {
             else t = paremVasakPööre(t);
         } else if (pööratavaHarud == -0b10) t = paremVasakPööre(t);
 
-        // Automaatkontroll ei pidavalt switch'i kannatama.
-//        switch (pööratavaHarud) {
-//            // Vasak haru
-//            case (0b10) -> juur = paremPööre(juur);
-//            case (0b11) -> {
-//
-//                if (juur.v.v.x > juur.v.p.x) juur = paremPööre(juur);
-//                else juur = vasakparemPööre(juur); // Esimesel võimalusel pp, teisel vpp
-//            }
-//            case (0b01) -> juur = vasakparemPööre(juur);
-//
-//            // Parem haru
-//            case (-0b01) -> juur = vasakPööre(juur);
-//            case (-0b11) -> {
-//
-//                if (juur.p.p.x > juur.p.v.x) juur = vasakPööre(juur);
-//                else juur = paremVasakPööre(juur);
-//            }
-//            case (-0b10) -> juur = paremVasakPööre(juur);
-//        }
+        t.x = leiaKõrgus(t);
 
         return t;
     }
@@ -326,42 +323,61 @@ class Kodu5 {
     /**
      * AVL puu meetod, mis liidab mingi kindla tipu kaks alamat, st AVL puud kokku.
      *
-     * @param avl1 Vasakpoolne alam
-     * @param avl2 Parempoolen alam
+     * @param v Vasakpoolne alam
+     * @param p Parempoolne alam
      * @return Tagastab kokku liidetud puud.
      */
-    public static Tipp liidaAVLpuud(Tipp avl1, Tipp avl2) {
-        if (avl1 == null && avl2 == null) return null;
-        if (avl1 == null) return avl2;
-        if (avl2 == null) return avl1;
+    public static Tipp liidaAVLpuud(Tipp v, Tipp p) {
+        if (v == null && p == null) return null;
+        if (v == null) return p;
+        if (p == null) return v;
 
-        // Kasutame parema haru väiksemat elementi uue juurena.
-        Tipp[] andmed = leiaJaEemaldaVäikseim(avl2);
-        Tipp väikseim = andmed[0];
-        Tipp vanem = andmed.length > 1 ? andmed[1] : null;
+        // Otsime paremast harust väikseima elemendi
 
-        if (vanem != null && !kasTasakaalustatudPuu(vanem)) {
-            Tipp tasakaalustatudVanem = tasakaalustaPuu(vanem);
-            Tipp vaadeldav = avl2;
-            if (vanem.equals(vaadeldav)) {
-                väikseim.p = tasakaalustatudVanem;
-            } else {
+        Tipp väikseim = null;
 
-                boolean leitud = false;
-                while (!leitud) {
-                    if (vanem.equals(vaadeldav.v)) {
-                        avl2.v = tasakaalustatudVanem;
+        Stack<Tipp> magasin = new Stack<>();
+        magasin.push(p);
 
-                    }
-                }
-                väikseim.p = avl2;
+        while (true){
+            Tipp t = magasin.peek();
+
+            if (t.v == null) {
+                väikseim = t;
+                magasin.pop();
+
+                break;
             }
 
-        } else väikseim.p = avl2;
+            magasin.push(t.v);
+        }
 
-        väikseim.v = avl1;
-        väikseim.x = leiaKõrgus(väikseim);
-        System.out.println();
+        Tipp uusP = null;
+
+        // Eemaldame väiksema puust
+        if (!magasin.isEmpty()) {
+            Tipp t = magasin.pop();
+            t.v = null;
+
+            t.x = kõrgus(t.p) + 1;
+
+            if (!kasTasakaalustatudPuu(p)){
+                uusP = tasakaalustaPuu(p);
+            } else {
+                uusP = p;
+            }
+        }
+
+        väikseim.v = v;
+        väikseim.p = uusP;
+
+
+        if (!(kasTasakaalustatudPuu(väikseim))) {
+            väikseim = tasakaalustaPuu(väikseim);
+        }
+
+        väikseim.x = Math.max(kõrgus(väikseim.v), kõrgus(väikseim.p));
+
         return väikseim;
     }
 
@@ -372,19 +388,16 @@ class Kodu5 {
      * @return Tagastab AVL puu kõrguse.
      */
     public static int leiaKõrgus(Tipp juur) {
-        return Math.max(juur.v == null ? 0 : kõrgus(juur.v),
-                juur.p == null ? 0 : kõrgus(juur.p)) + 1;
+        return Math.max( kõrgus(juur.v),
+                 kõrgus(juur.p)) + 1;
     }
 
     public static void main(String[] args) {
 
+        // Eemalda V - F
+        int[] j = new int[]{7, 6, 2, 12, 3, 15, 5, 4, 3, 13, 5, 11, 13, 8, 11, 5};
+        int[] k = new int[]{1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1};
 
-//        int[] j = new int[]{2, 1, 3, 4, 5};
-//        int[] k = new int[]{1, 1, 1, 1, 1};
-
-        // Vasakparempööre
-        int[] j = new int[]{1, 3, 2};
-        int[] k = new int[]{1, 1, 1};
         Tipp t = null;
 
         for (int i = 0; i < j.length; i++) {
@@ -394,18 +407,7 @@ class Kodu5 {
                 t = eemaldaKirje(t, Integer.toString(j[i]));
             }
         }
-
         Kuvar.kuvaPuu(t);
-
-//        Tipp tipp1 = new Tipp("5");
-//        tipp1 = lisaKirje(tipp1, "6");
-//        tipp1 = lisaKirje(tipp1, "3");
-//        tipp1 = lisaKirje(tipp1, "4");
-//        tipp1 = lisaKirje(tipp1, "2");
-//        tipp1 = lisaKirje(tipp1, "1");
-//        Kuvar.kuvaPuu(tipp1);
     }
-
-
 }//klass Kodu5
 
